@@ -1,7 +1,21 @@
 #!/bin/bash
 DATABASE_PASS='admin123'
 sudo yum update -y
-sudo yum install epel-release -y
+#sudo yum install epel-release -y   Not support in Amazon Linux
+#workaround
+cat > /etc/yum.repos.d/MariaDB.repo <<EOF
+# MariaDB 10.11 RedHatEnterpriseLinux repository list - created 2023-06-07 09:26 UTC
+# https://mariadb.org/download/
+[mariadb]
+name = MariaDB
+# rpm.mariadb.org is a dynamic mirror if your preferred mirror goes offline. See https://mariadb.org/mirrorbits/ for details.
+# baseurl = https://rpm.mariadb.org/10.11/rhel/$releasever/$basearch
+baseurl = https://mirrors.xtom.jp/mariadb/yum/10.11/rhel/9/$basearch
+# gpgkey = https://rpm.mariadb.org/RPM-GPG-KEY-MariaDB
+gpgkey = https://mirrors.xtom.jp/mariadb/yum/RPM-GPG-KEY-MariaDB
+gpgcheck = 1
+EOF
+
 sudo yum install git zip unzip -y
 sudo yum install mariadb-server -y
 
@@ -10,7 +24,7 @@ sudo yum install mariadb-server -y
 sudo systemctl start mariadb
 sudo systemctl enable mariadb
 cd /tmp/
-git clone -b main https://github.com/hkhcoder/vprofile-project.git
+git clone -b aws-LiftAndShift https://github.com/jtomalewski/vprofile-project.git
 #restore the dump file for the application
 sudo mysqladmin -u root password "$DATABASE_PASS"
 sudo mysql -u root -p"$DATABASE_PASS" -e "UPDATE mysql.user SET Password=PASSWORD('$DATABASE_PASS') WHERE User='root'"
